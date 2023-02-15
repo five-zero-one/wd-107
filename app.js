@@ -1,15 +1,14 @@
 const config = require("./config");
 const express = require("express");
+const photoRouter = require("./routes/photoRoutes");
 
 const app = express();
 
 
 app.use(express.json());
 
-app.get("/", (req, res) => {
-    res.send({ message: "Welcome to the Unsplash API!" });
-});
+app.use("/api/photos", photoRouter);
 
-app.listen(config.PORT, () => {
-    console.log(`Listening on port ${config.PORT}`);
+app.listen(config.port, () => {
+    console.log(`Listening on port ${config.port}`);
 });
