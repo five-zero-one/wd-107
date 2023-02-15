@@ -11,10 +11,6 @@ const photoRouter = express.Router();
 
 /** GET all photos */
 photoRouter.get("/", async (req, res) => {
-    // use axios to make a request to the API
-    // const photos = await axios.get(apiUrl);
-    // use unsplash-js to make a request to the API
-
     const page = req.query.page || 1;
     const perPage = req.query.perPage || 10;
 
@@ -48,8 +44,25 @@ photoRouter.get("/:id", async (req, res) => {
 });
 
 /** GET user's photos */
-photoRouter.get("/user/:id", (req, res) => {
-    res.send({ message: `GET photos for user ${req.params.id}` });
+photoRouter.get("/user/:username", async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const api = await unsplash.users.getPhotos({ username: req.params.username });
+        if (api.errors) throw new Error("Server error.Please try again later.");
+
+        const photos = api.response.results.map(({ id, urls: { raw }, user: { username }, description }) => ({
+            id,
+            username,
+            url: raw,
+            description: description || "No description provided.",
+        }));
+
+        res.send(photos);
+    } catch (error) {
+        res.status(500).send({ message: error.message });
+    }
+
 });
 
 module.exports = photoRouter;
