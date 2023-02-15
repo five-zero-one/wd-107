@@ -3,10 +3,13 @@ const express = require("express");
 
 const app = express();
 
+
+app.use(express.json());
+
 app.get("/", (req, res) => {
-    res.send("Welcome to the Unsplash API!");
+    res.send({ message: "Welcome to the Unsplash API!" });
 });
 
-app.listen(config.port, () => {
+app.listen(config.PORT, () => {
     console.log(`Listening on port ${config.PORT}`);
 });
