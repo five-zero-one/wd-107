@@ -6,8 +6,9 @@ const app = express();
 
 app
     .use(express.json())
-    .use("/api/photos", require("./routes/photoRoutes"))
     .use("/api/users", require("./routes/userRoutes"))
+    .use("/api/photos/favorites", require("./routes/favoritesRoutes"))
+    .use("/api/photos", require("./routes/photoRoutes"))
     .listen(config.port, main);
 
 async function main() {
