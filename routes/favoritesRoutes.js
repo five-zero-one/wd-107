@@ -89,7 +89,7 @@ photosRouter.put("/:id", async (req, res) => {
         const parsed = await decoder.parseAsync(req.body);
 
         const updateResult = await FavouritePhotos.updateOne({ _id: id, user: req.auth.sub }, { $set: { explanation: parsed.explanation } });
-        updateResult.modifiedCount === 1 ? res.sendStatus(200) : res.sendStatus(404);
+        updateResult.matchedCount === 1 ? res.sendStatus(200) : res.sendStatus(404);
     } catch (error) {
         if (error.code === 11000) {
             console.log(error);
