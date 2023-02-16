@@ -1,68 +1,13 @@
-const express = require("express");
-const { createApi } = require("unsplash-js");
-const config = require("../config");
+const PhotoController = require("../controllers/photoController");
 
-const unsplash = createApi({
-    accessKey: config.unsplash.accessKey,
-    secretKey: config.unsplash.secretKey,
-});
+const photoRouter = require("express").Router();
 
-const photoRouter = express.Router();
-
-/** GET all photos */
-photoRouter.get("/", async (req, res) => {
-    const page = req.query.page || 1;
-    const perPage = req.query.perPage || 10;
-
-    try {
-        const api = await unsplash.photos.list({ page, perPage });
-        if (api.errors) throw new Error("Server error.Please try again later.");
-
-        const photos = api.response.results.map(({ id, urls: { raw } }) => ({
-            id: id,
-            url: raw,
-        }));
-
-        res.send(photos);
-    } catch (error) {
-        res.status(500).send({ message: error.message });
-    }
-});
-
-/** GET a single photo */
-photoRouter.get("/:id", async (req, res) => {
-    const { id } = req.params;
-
-    try {
-        const api = await unsplash.photos.get({ photoId: id });
-        if (api.errors) throw new Error("Server error.Please try again later.");
-
-        res.send(api.response);
-    } catch (error) {
-        res.status(500).send({ message: error.message });
-    }
-});
-
-/** GET user's photos */
-photoRouter.get("/user/:username", async (req, res) => {
-    const { username } = req.params;
-
-    try {
-        const api = await unsplash.users.getPhotos({ username: req.params.username });
-        if (api.errors) throw new Error("Server error.Please try again later.");
-
-        const photos = api.response.results.map(({ id, urls: { raw }, user: { username }, description }) => ({
-            id,
-            username,
-            url: raw,
-            description: description || "No description provided.",
-        }));
-
-        res.send(photos);
-    } catch (error) {
-        res.status(500).send({ message: error.message });
-    }
-
-});
+photoRouter
+    /** GET all photos */
+    .get("/", PhotoController.getAll)
+    /** GET a single photo */
+    .get("/:id", PhotoController.getOne)
+    /** GET user's photos */
+    .get("/user/:username", PhotoController.getUserPhotos);
 
 module.exports = photoRouter;
